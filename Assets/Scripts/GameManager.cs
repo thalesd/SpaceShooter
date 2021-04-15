@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,7 +23,14 @@ public class GameManager : MonoBehaviour
     public int[] wavesRowsToInstantiate;
 
     private Dictionary<DebreeEnum, GameObject> debreePrefabDictionary;
-    // Start is called before the first frame update
+
+    public GameObject GameOverCanvas;
+    public GameObject YouWinCanvas;
+
+    private bool isWaveSpawning = false;
+
+    public Text currentWaveIndicator;
+
     void Start()
     {
         if(instance == null)
@@ -48,15 +56,18 @@ public class GameManager : MonoBehaviour
         isGameRunning = true;
 
         StartCoroutine(WaveSpawner());
+
+        GameOverCanvas.SetActive(false);
+        YouWinCanvas.SetActive(false);
     }
 
     public void Update()
     {
-        if(spawnedEnemies.Count == 0)
+        if(!isWaveSpawning && spawnedEnemies.Count == 0)
         {
-            currentWave++;
-
             StartCoroutine(WaveSpawner());
+
+            currentWave++;
         }
     }
 
@@ -79,7 +90,7 @@ public class GameManager : MonoBehaviour
         //disable player controller, show game over screen with restart button.
         PauseGame();
 
-        Debug.Log("Game Over!");
+        GameOverCanvas.SetActive(true);
     }
 
     public void PauseGame()
@@ -97,10 +108,13 @@ public class GameManager : MonoBehaviour
     public IEnumerator WaveSpawner()
     {
         int waveRowSpawned = 0;
+        isWaveSpawning = true;
+
+        StartCoroutine(ShowWaveNumber());
 
         yield return new WaitForSeconds(2f);
 
-        while (isGameRunning && waveRowSpawned < wavesRowsToInstantiate[currentWave])
+        while (isGameRunning && currentWave < wavesRowsToInstantiate.Length && waveRowSpawned < wavesRowsToInstantiate[currentWave])
         {
             var enemiesToSpawn = Mathf.Clamp(Random.Range(playerReference.playerLevel, 17 + playerReference.playerLevel), playerReference.playerLevel, 17);
 
@@ -126,21 +140,27 @@ public class GameManager : MonoBehaviour
             waveRowSpawned++;
         }
 
-        StopCoroutine(WaveSpawner());
+        isWaveSpawning = false;
+
+        StopCoroutine("WaveSpawner");
     }
 
     public void WinScreen()
     {
         PauseGame();
 
-        //show win screen
-        
+        YouWinCanvas.SetActive(true);
     }
 
-    public void ShowWaveNumeber()
+    public IEnumerator ShowWaveNumber()
     {
-        //show wave number
+        currentWaveIndicator.text = "Wave " + (currentWave + 1).ToString() + " / " + wavesRowsToInstantiate.Length.ToString();
 
+        currentWaveIndicator.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(1f);
+
+        currentWaveIndicator.gameObject.SetActive(false);
     }
 
     public void RemoveEnemyFromList(GameObject enemy)

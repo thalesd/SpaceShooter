@@ -247,4 +247,7 @@ MonoBehaviour:
   isGameRunning: 0
   spawnedEnemies: []
   currentWave: 0
-  wavesRowsToInstantiate: 020000000500000007000000090000000b000000
+  wavesRowsToInstantiate: 020000000500000007000000090000000b0000000d0000000f00000013000000170000001b000000
+  GameOverCanvas: {fileID: 0}
+  YouWinCanvas: {fileID: 0}
+  currentWaveIndicator: {fileID: 0}

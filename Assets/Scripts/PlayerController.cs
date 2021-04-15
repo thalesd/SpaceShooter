@@ -61,39 +61,42 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0) && canFireSimpleLaser)
+        if(GameManager.instance.isGameRunning)
         {
-            FireSimpleLaser();
-        }
-
-        if(playerLevel > 1)
-        {
-            if (Input.GetKey(KeyCode.Mouse1) && !isFiringLaserInCooldown)
+            if (Input.GetKey(KeyCode.Mouse0) && canFireSimpleLaser)
             {
-                StartFiringLaserBeam();
+                FireSimpleLaser();
             }
-            else if((Input.GetKeyUp(KeyCode.Mouse1) && isFiringLaserBeam))
+
+            if(playerLevel > 1)
             {
-                StopFiringLaserBeam();
+                if (Input.GetKey(KeyCode.Mouse1) && !isFiringLaserInCooldown)
+                {
+                    StartFiringLaserBeam();
+                }
+                else if((Input.GetKeyUp(KeyCode.Mouse1) && isFiringLaserBeam))
+                {
+                    StopFiringLaserBeam();
+                }
             }
-        }
 
-        HandleMovement();
+            HandleMovement();
 
-        if (isFiringLaserBeam)
-        {
-            CheckToKillEnemies();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (GameManager.instance.isGameRunning)
+            if (isFiringLaserBeam)
             {
-                GameManager.instance.PauseGame();
+                CheckToKillEnemies();
             }
-            else
+
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                GameManager.instance.UnPauseGame();
+                if (GameManager.instance.isGameRunning)
+                {
+                    GameManager.instance.PauseGame();
+                }
+                else
+                {
+                    GameManager.instance.UnPauseGame();
+                }
             }
         }
     }
@@ -357,7 +360,7 @@ public class PlayerController : MonoBehaviour
         {
             laserBeamAmmo = Mathf.Clamp(laserBeamAmmo - 1, 0, 100);
 
-            laserBeamSlider.value = Mathf.Clamp(laserBeamAmmo, 0, 100);
+            laserBeamSlider.value = laserBeamAmmo;
 
             yield return new WaitForSeconds(.3f);
 
