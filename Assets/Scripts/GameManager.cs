@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -24,6 +25,8 @@ public class GameManager : MonoBehaviour
 
     private Dictionary<DebreeEnum, GameObject> debreePrefabDictionary;
 
+    public GameObject PauseCanvas;
+
     public GameObject GameOverCanvas;
     public GameObject YouWinCanvas;
 
@@ -31,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     public Text currentWaveIndicator;
 
-    void Start()
+    void Awake()
     {
         if(instance == null)
         {
@@ -59,6 +62,7 @@ public class GameManager : MonoBehaviour
 
         GameOverCanvas.SetActive(false);
         YouWinCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
     }
 
     public void Update()
@@ -90,19 +94,22 @@ public class GameManager : MonoBehaviour
         //disable player controller, show game over screen with restart button.
         PauseGame();
 
+        PauseCanvas.SetActive(false);
         GameOverCanvas.SetActive(true);
     }
 
     public void PauseGame()
     {
+        PauseCanvas.SetActive(true);
+
         isGameRunning = false;
-        Time.timeScale = 0;
     }
 
     public void UnPauseGame()
     {
+        PauseCanvas.SetActive(false);
+
         isGameRunning = true;
-        Time.timeScale = 1;
     }
 
     public IEnumerator WaveSpawner()
@@ -142,13 +149,14 @@ public class GameManager : MonoBehaviour
 
         isWaveSpawning = false;
 
-        StopCoroutine("WaveSpawner");
+        StopCoroutine(nameof(WaveSpawner));
     }
 
     public void WinScreen()
     {
         PauseGame();
 
+        PauseCanvas.SetActive(false);
         YouWinCanvas.SetActive(true);
     }
 
@@ -166,5 +174,10 @@ public class GameManager : MonoBehaviour
     public void RemoveEnemyFromList(GameObject enemy)
     {
         spawnedEnemies.Remove(enemy);
+    }
+
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }

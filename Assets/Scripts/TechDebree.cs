@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class TechDebree : MonoBehaviour, ICollectible
 {
@@ -12,7 +10,8 @@ public abstract class TechDebree : MonoBehaviour, ICollectible
     {
         Vector2 downSpeed = new Vector2(Random.Range(-1f, 1f), 0);
 
-        transform.Translate(downSpeed * speed * Time.deltaTime);
+        if(GameManager.instance.isGameRunning)
+            transform.Translate(downSpeed * speed * Time.deltaTime);
     }
 
     public virtual void Collect()

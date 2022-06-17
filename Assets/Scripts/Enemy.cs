@@ -1,29 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.VFX.Utility;
+﻿using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     public GameObject enemyExplodingParticles;
+    public AudioClip enemyExplodingAudio;
 
     public float speed = 1.5f;
 
     private void Update()
     {
-        transform.Translate(new Vector2(0, -1) * speed * Time.deltaTime);
+        if(GameManager.instance.isGameRunning)
+            transform.Translate(new Vector2(0, -1) * speed * Time.deltaTime);
     }
 
     public void Die()
     {
-        //instantiate explode anim/particle system
-        Instantiate(enemyExplodingParticles);
+        Instantiate(enemyExplodingParticles, transform.position, Quaternion.identity);
+        SFXAudioSource.Instance.PlayGameplayEffectOneShot((int)GameplaySFX.EnemyDestroyed);
 
         GameManager.instance.InstantiateDebree(transform.position);
 
         GameManager.instance.RemoveEnemyFromList(gameObject);
 
-        //destroy game object 
         Destroy(gameObject);
     }
 

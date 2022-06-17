@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,6 +31,7 @@ public class PlayerController : MonoBehaviour
 
     public Slider laserBeamSlider;
     public int laserBeamAmmo = 0;
+    public int laserBeamDeductionRate = 5;
 
     public int playerLevel = 1;
     public int playerEvolutionGauge = 0;
@@ -44,9 +44,21 @@ public class PlayerController : MonoBehaviour
     public int life = 100;
     public Slider lifeSlider;
 
+    private AudioSource _engineSound;
+    private AudioSource _laserBeamSound;
+
     // Start is called before the first frame update
     void Start()
     {
+        var audioSources = GetComponents<AudioSource>();
+        _engineSound = audioSources[0];
+        _laserBeamSound = audioSources[1];
+
+        _engineSound.volume = GameSettingsController.Instance.GetSFXVolume();
+        _laserBeamSound.volume = GameSettingsController.Instance.GetSFXVolume();
+
+        _engineSound.Play();
+
         laserBodyCount = Display.main.renderingHeight / 8;
 
         laserBeamSlider.value = laserBeamAmmo;
@@ -70,7 +82,7 @@ public class PlayerController : MonoBehaviour
 
             if(playerLevel > 1)
             {
-                if (Input.GetKey(KeyCode.Mouse1) && !isFiringLaserInCooldown)
+                if (Input.GetKeyDown(KeyCode.Mouse1) && !isFiringLaserInCooldown)
                 {
                     StartFiringLaserBeam();
                 }
@@ -86,17 +98,17 @@ public class PlayerController : MonoBehaviour
             {
                 CheckToKillEnemies();
             }
+        }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (GameManager.instance.isGameRunning)
             {
-                if (GameManager.instance.isGameRunning)
-                {
-                    GameManager.instance.PauseGame();
-                }
-                else
-                {
-                    GameManager.instance.UnPauseGame();
-                }
+                GameManager.instance.PauseGame();
+            }
+            else
+            {
+                GameManager.instance.UnPauseGame();
             }
         }
     }
@@ -155,6 +167,7 @@ public class PlayerController : MonoBehaviour
         foreach(var origin in currentSimpleLaserOrigins)
         {
             Instantiate(simpleLaserPrefab, origin.transform.position, Quaternion.Euler(origin.eulerAngles));
+            SFXAudioSource.Instance.PlayGameplayEffectOneShot((int)GameplaySFX.LaserFired);
         }
 
         canFireSimpleLaser = false;
@@ -172,6 +185,8 @@ public class PlayerController : MonoBehaviour
     public void StartFiringLaserBeam()
     {
         isFiringLaserBeam = true;
+
+        _laserBeamSound.Play();
 
         if (!isLaserBeamInstantiated)
         {
@@ -253,6 +268,8 @@ public class PlayerController : MonoBehaviour
 
         isFiringLaserInCooldown = true;
 
+        _laserBeamSound.Stop();
+
         StartCoroutine(firingLaserCooldownTimer());
     }
 
@@ -331,6 +348,7 @@ public class PlayerController : MonoBehaviour
         }
 
         StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake(.3f, .1f));
+        SFXAudioSource.Instance.PlayGameplayEffectOneShot((int)GameplaySFX.PlayerHit);
 
         lifeSlider.value = life;
     }
@@ -344,6 +362,7 @@ public class PlayerController : MonoBehaviour
         if (playerEvolutionGauge == 100)
         {
             LevelUp();
+            SFXAudioSource.Instance.PlayGameplayEffectOneShot((int)GameplaySFX.LevelUp);
         }
     }
 
@@ -358,7 +377,7 @@ public class PlayerController : MonoBehaviour
     {
         while (isFiringLaserBeam)
         {
-            laserBeamAmmo = Mathf.Clamp(laserBeamAmmo - 1, 0, 100);
+            laserBeamAmmo = Mathf.Clamp(laserBeamAmmo - laserBeamDeductionRate, 0, 100);
 
             laserBeamSlider.value = laserBeamAmmo;
 
@@ -368,10 +387,10 @@ public class PlayerController : MonoBehaviour
             {
                 StopFiringLaserBeam();
 
-                StopCoroutine(DeductLaserBeamAmmo());
+                StopCoroutine(nameof(DeductLaserBeamAmmo));
             }
         }
 
-        StopCoroutine(DeductLaserBeamAmmo());
+        StopCoroutine(nameof(DeductLaserBeamAmmo));
     }
 }

@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class ExperienceTechDebree : TechDebree
+﻿public class ExperienceTechDebree : TechDebree
 {
     private int evolutionValue = 10;
 

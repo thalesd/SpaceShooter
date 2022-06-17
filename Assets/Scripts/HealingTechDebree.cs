@@ -1,10 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class HealingTechDebree : TechDebree
+﻿public class HealingTechDebree : TechDebree
 {
-    [SerializeField]
     private int healingValue = 10;
 
     //default behavior

@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum DebreeEnum
+﻿public enum DebreeEnum
 {
    Healing = 1,
    Experience = 2,

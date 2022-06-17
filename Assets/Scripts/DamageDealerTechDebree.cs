@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 public class DamageDealerTechDebree : TechDebree
 {
     private int damageValue = 10;

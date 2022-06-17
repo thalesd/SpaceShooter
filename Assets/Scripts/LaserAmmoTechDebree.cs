@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class LaserAmmoTechDebree : TechDebree
+﻿public class LaserAmmoTechDebree : TechDebree
 {
     public int ammoValue = 10;
 
